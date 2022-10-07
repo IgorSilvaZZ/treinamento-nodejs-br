@@ -3,7 +3,7 @@ const nock = require("nock");
 
 const { obterPessoas } = require("./service");
 
-describe("Star Wars Tests", () => {
+describe("Star Wars Tests", function () {
   before(function () {
     // Mockando a resposta para simular o retorno da API
     const response = {
@@ -39,15 +39,15 @@ describe("Star Wars Tests", () => {
       ],
     };
 
-    nock("https://swapi.dev/api")
-      .get("/people/?search=R2-D2&forget=json")
+    nock("https://swapi.dev/api/people")
+      .get("/?search=r2-d2&format=json")
       .reply(200, response);
   });
 
   it("Deve buscar o R2D2 com formato correto", async () => {
     const expected = [{ nome: "R2-D2", peso: "96" }];
 
-    const nomeBase = `R2-D2`;
+    const nomeBase = `r2-d2`;
 
     const resultado = await obterPessoas(nomeBase);
 
