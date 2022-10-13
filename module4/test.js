@@ -1,4 +1,4 @@
-const { deepEqual, ok } = require("assert");
+const { deepEqual } = require("assert");
 
 const database = require("./database");
 
@@ -13,9 +13,15 @@ describe("Suite de manipulaçao de Herois", () => {
     deepEqual(resultado, expected);
   });
 
-  /* it("Deve cadastrar um heroi, usando arquivos", async () => {
+  it("Deve cadastrar um heroi, usando arquivos", async () => {
     const expected = DEFAULT_ITEM_CADASTRAR;
 
-    ok(null, expected);
-  }); */
+    // Cadastramos o heroi com id assim modificando o arquivo original, adicionando o heroi com o id juntamente com os anteriores
+    const resultado = await database.cadastrar(DEFAULT_ITEM_CADASTRAR);
+
+    // Listamos o arquivo atualizado com o novo heroi cadastrado
+    const [actual] = await database.listar(DEFAULT_ITEM_CADASTRAR.id);
+
+    deepEqual(actual, expected);
+  });
 });
