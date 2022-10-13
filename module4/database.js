@@ -45,6 +45,26 @@ class Database {
 
     return dadosFiltrados;
   }
+
+  async removerPorId(id) {
+    if (!id) {
+      // Deletando tudo do nosso arquivo
+      return await this.escreverArquivo([]);
+    }
+
+    const dados = await this.obterDadosArquivo();
+
+    const indice = dados.findIndex((item) => item.id === id);
+
+    if (indice === -1) {
+      throw Error("O heroi informado nao existe!");
+    }
+
+    dados.splice(indice, 1);
+
+    //Cadastrando os herois sem o heroi que excluimos
+    return await this.escreverArquivo(dados);
+  }
 }
 
 module.exports = new Database();
