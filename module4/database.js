@@ -1,6 +1,7 @@
 const { throws } = require("assert");
 const { readFile, writeFile } = require("fs");
 const { promisify } = require("util");
+const { randomUUID } = require("crypto");
 
 const readFileAsync = promisify(readFile);
 const writeFileAsync = promisify(writeFile);
@@ -25,7 +26,7 @@ class Database {
   async cadastrar(heroi) {
     const dados = await this.obterDadosArquivo();
 
-    const id = heroi.id <= 2 ? heroi.id : Date.now();
+    const id = heroi.id <= 2 ? heroi.id : randomUUID();
 
     const heroiComId = {
       id,
@@ -41,6 +42,10 @@ class Database {
 
   async listar(id) {
     const dados = await this.obterDadosArquivo();
+
+    if (!id) {
+      return dados;
+    }
 
     const dadosFiltrados = dados.filter((item) => (id ? item.id === id : true));
 
@@ -70,7 +75,11 @@ class Database {
   async atualizar(id, modificacoes) {
     const dados = await this.obterDadosArquivo();
 
-    const indice = dados.findIndex((item) => item.id === parseInt(id));
+    if (typeof id === "number") {
+      id = parseInt(id);
+    }
+
+    const indice = dados.findIndex((item) => item.id === id);
 
     if (indice === -1) {
       throw Error("O heroi informado nao existe!");
