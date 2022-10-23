@@ -1,3 +1,4 @@
+const { throws } = require("assert");
 const { readFile, writeFile } = require("fs");
 const { promisify } = require("util");
 
@@ -64,6 +65,27 @@ class Database {
 
     //Cadastrando os herois sem o heroi que excluimos
     return await this.escreverArquivo(dados);
+  }
+
+  async atualizar(id, modificacoes) {
+    const dados = await this.obterDadosArquivo();
+
+    const indice = dados.findIndex((item) => item.id === parseInt(id));
+
+    if (indice === -1) {
+      throw Error("O heroi informado nao existe!");
+    }
+
+    const atual = dados[indice];
+
+    dados.splice(indice, 1);
+
+    const objetoAtualizado = {
+      ...atual,
+      ...modificacoes,
+    };
+
+    return await this.escreverArquivo([...dados, objetoAtualizado]);
   }
 }
 
