@@ -7,8 +7,8 @@ class ContextStrategy extends ICrud {
     this._database = strategy;
   }
 
-  isConnected() {
-    this._database.isConnected();
+  async isConnected() {
+    await this._database.isConnected();
   }
 
   create(item) {
