@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "test": "npx mocha src/tests/*.js",
+    "test:watch": "npx mocha src/tests/*.js -w"
+  },
   "dependencies": {
     "pg": "^8.8.0",
     "pg-hstore": "^2.3.4",

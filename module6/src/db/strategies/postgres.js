@@ -7,22 +7,32 @@ class Postgres extends ICrud {
     super();
     this._driver = null;
     this._herois = null;
-    this._connect();
   }
 
   async isConnected() {
+    let connected = false;
+
     try {
       await this._driver.authenticate();
 
-      return true;
+      connected = true;
     } catch (error) {
       console.log("Erro ao tentar se conectar: ", error);
-      return false;
     }
+
+    return connected;
   }
 
-  create() {
-    console.log("O item foi salvo em PostGres");
+  async create(item) {
+    const { dataValues } = await this._herois.create(item);
+
+    return dataValues;
+  }
+
+  async read(item = {}) {
+    const result = await this._herois.findAll({ where: item, raw: true });
+
+    return result;
   }
 
   async defineModel() {
@@ -51,16 +61,17 @@ class Postgres extends ICrud {
       }
     );
 
-    await Herois.sync();
+    await this._herois.sync();
   }
 
-  _connect() {
+  async connect() {
     this._driver = new Sequelize("herois", "docker", "ignite", {
       host: "localhost",
       dialect: "postgres",
       quoteIdentifiers: false,
       operatorAliases: false,
     });
+    await this.defineModel();
   }
 }
 
