@@ -20,11 +20,11 @@ class ContextStrategy extends ICrud {
   }
 
   update(id, item) {
-    return this._database.update(item);
+    return this._database.update(id, item);
   }
 
-  delete(item) {
-    return this._database.delete(item);
+  delete(id) {
+    return this._database.delete(id);
   }
 
   connect() {
