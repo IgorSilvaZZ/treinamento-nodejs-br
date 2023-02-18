@@ -12,8 +12,8 @@ const STATUS = {
 class MongoDB extends ICrud {
   constructor(connection, schema) {
     super();
-    this._schema = schema;
     this._connection = connection;
+    this._collection = schema;
   }
 
   async isConnected() {
@@ -44,19 +44,19 @@ class MongoDB extends ICrud {
   }
 
   async create(item) {
-    return await this._schema.create(item);
+    return await this._collection.create(item);
   }
 
   async read(item, skip = 0, limit = 10) {
-    return await this._schema.find(item).skip(skip).limit(limit);
+    return await this._collection.find(item).skip(skip).limit(limit);
   }
 
   async update(id, item) {
-    return await this._schema.updateOne({ _id: id }, { $set: item });
+    return await this._collection.updateOne({ _id: id }, { $set: item });
   }
 
   async delete(id) {
-    return await this._schema.deleteOne({ _id: id });
+    return await this._collection.deleteOne({ _id: id });
   }
 }
 

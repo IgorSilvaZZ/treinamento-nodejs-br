@@ -15,4 +15,5 @@ const heroiSchema = new Mongoose.Schema({
   },
 });
 
-module.exports = Mongoose.model("herois", heroiSchema);
+module.exports =
+  Mongoose.models.herois || Mongoose.model("herois", heroiSchema);
