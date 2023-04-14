@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const Boom = require("boom");
 
 const BaseRoute = require("./base/baseRoute");
 
@@ -35,7 +36,7 @@ class HeroRoutes extends BaseRoute {
           return this.db.read(item, skip, limit);
         } catch (error) {
           console.log("Deu ruim!");
-          return "Erro interno no servidor!";
+          return Boom.internal();
         }
       },
     };
@@ -66,7 +67,7 @@ class HeroRoutes extends BaseRoute {
           };
         } catch (error) {
           console.log("Deu Ruim!");
-          return "Internal Error!";
+          return Boom.internal();
         }
       },
     };
@@ -100,7 +101,8 @@ class HeroRoutes extends BaseRoute {
             const result = await this.db.update(id, dados);
 
             if (result.modifiedCount !== 1) {
-              return "Nao foi possivel atualizar!";
+              // return "Nao foi possivel atualizar!";
+              return Boom.preconditionFailed("Id não encontrado");
             }
 
             return {
@@ -108,9 +110,42 @@ class HeroRoutes extends BaseRoute {
             };
           } catch (error) {
             console.log("Deu Ruim!");
-            return "Internal Error!";
+            return Boom.internal();
           }
         },
+      },
+    };
+  }
+
+  delete() {
+    return {
+      path: "/herois/{id}",
+      method: "DELETE",
+      options: {
+        validate: {
+          failAction,
+          params: Joi.object({
+            id: Joi.string().required(),
+          }),
+        },
+      },
+      handler: async (req, reply) => {
+        try {
+          const { id } = req.params;
+
+          const result = await this.db.delete(id);
+
+          if (result.deletedCount !== 1) {
+            return Boom.preconditionFailed("Id não encontrado");
+          }
+
+          return {
+            message: "Heroi Removido com sucesso!",
+          };
+        } catch (error) {
+          console.log("Deu Ruim!");
+          return Boom.internal();
+        }
       },
     };
   }

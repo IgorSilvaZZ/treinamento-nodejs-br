@@ -128,21 +128,66 @@ describe("Suite de testes na API Heros", function () {
     assert.deepEqual(dados.message, "Heroi atualizado com sucesso!");
   });
 
-  it("Atualizar PATCH /herois/:id nao deve atualizar com ID incorreto", async () => {
+  it("Atualizar PATCH /herois/:id - Nao deve atualizar com ID incorreto", async () => {
     let _id = "63ed6a6e6ec238c45cbdeb7b";
 
-    const expected = {
+    const payload = {
       poder: "Super Mira",
     };
 
     const resultAtualizar = await app.inject({
       method: "PATCH",
       url: `/herois/${_id}`,
-      payload: JSON.stringify(expected),
+      payload: JSON.stringify(payload),
     });
+
+    const expected = {
+      statusCode: 412,
+      error: "Precondition Failed",
+      message: "Id não encontrado",
+    };
 
     const dados = resultAtualizar;
 
-    assert.deepEqual(dados.result, "Nao foi possivel atualizar!");
+    assert.deepEqual(dados.result, expected);
+  });
+
+  it("Remover DELETE - /herois/:id", async () => {
+    const resultCriar = await app.inject({
+      method: "POST",
+      url: `/herois`,
+      payload: JSON.stringify(MOCK_HEROI_INICIAL),
+    });
+
+    const { _id } = JSON.parse(resultCriar.payload);
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/herois/${_id}`,
+    });
+
+    const statusCode = response.statusCode;
+
+    assert.ok(statusCode === 200);
+    assert.deepEqual(response.result.message, "Heroi Removido com sucesso!");
+  });
+
+  it.only("Remover DELETE - /herois/:id - Não deve remover com ID incorreto", async () => {
+    const _id = "63ed6a6e6ec238c45cbdeb7b";
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/herois/${_id}`,
+    });
+
+    const expected = {
+      statusCode: 412,
+      error: "Precondition Failed",
+      message: "Id não encontrado",
+    };
+
+    const dados = response;
+
+    assert.deepEqual(dados.result, expected);
   });
 });
