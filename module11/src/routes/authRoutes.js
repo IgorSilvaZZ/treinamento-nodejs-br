@@ -1,7 +1,8 @@
 const Joi = require("joi");
 const Boom = require("boom");
 const jwt = require("jsonwebtoken");
-const { randomUUID } = require("node:crypto");
+
+const PasswordHelper = require("../helpers/passwordHelper");
 
 const BaseRoute = require("./base/baseRoute");
 
@@ -15,9 +16,10 @@ const USER = {
 };
 
 class HeroRoutes extends BaseRoute {
-  constructor(secret) {
+  constructor(secret, db) {
     super();
     this.secret = secret;
+    this.db = db;
   }
 
   login() {
@@ -40,17 +42,27 @@ class HeroRoutes extends BaseRoute {
       handler: async (req, reply) => {
         const { username, password } = req.payload;
 
-        if (
-          username.toLowerCase() !== USER.username ||
-          password.toLowerCase() !== USER.password
-        ) {
-          return Boom.unauthorized();
+        const [user] = await this.db.read({
+          username: username.toLowerCase(),
+        });
+
+        if (!user) {
+          return Boom.unauthorized("O usuario informado não existe!");
+        }
+
+        const passwordVerify = await PasswordHelper.comparePassword(
+          password,
+          user.password
+        );
+
+        if (!passwordVerify) {
+          return Boom.unauthorized("O usuario ou senha invalidos!");
         }
 
         const token = jwt.sign(
           {
             username,
-            id: randomUUID(),
+            id: user.id,
           },
           this.secret
         );
