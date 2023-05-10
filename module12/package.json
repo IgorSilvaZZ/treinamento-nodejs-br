@@ -4,8 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "npx mocha --timeout 10000 src/tests/*.js",
+    "test": "npx nyc --reporter=html mocha --timeout 10000 src/tests/*.js",
     "test:watch": "npx mocha src/tests/*.js -w",
+    "dev": "cross-env NODE_ENV=dev node ./src/api.js",
     "prod": "cross-env NODE_ENV=prod node ./src/api.js"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
     "vision": "^5.4.4"
   },
   "devDependencies": {
-    "mocha": "^10.2.0"
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0"
   }
 }
